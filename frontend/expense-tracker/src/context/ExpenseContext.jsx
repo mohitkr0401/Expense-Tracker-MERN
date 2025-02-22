@@ -4,41 +4,53 @@ const ExpenseContext = createContext();
 
 export function ExpenseProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
-  
-  // Load expenses from localStorage on mount
+  const [filter, setFilter] = useState({
+    category: 'all',
+    minAmount: '',
+    maxAmount: '',
+    searchQuery: ''
+  });
+
+  // Load from localStorage
   useEffect(() => {
-    const savedExpenses = localStorage.getItem('expenses');
-    if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses));
-    }
+    const saved = localStorage.getItem('expenses');
+    if (saved) setExpenses(JSON.parse(saved));
   }, []);
 
-  // Save to localStorage whenever expenses change
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses));
   }, [expenses]);
 
-  // CRUD Operations
-  const addExpense = (newExpense) => {
-    setExpenses([...expenses, { ...newExpense, id: Date.now() }]);
+  const addExpense = (expense) => {
+    setExpenses([...expenses, { ...expense, id: Date.now() }]);
   };
 
   const updateExpense = (updatedExpense) => {
-    setExpenses(expenses.map(exp => 
-      exp.id === updatedExpense.id ? updatedExpense : exp
-    ));
+    setExpenses(expenses.map(e => e.id === updatedExpense.id ? updatedExpense : e));
   };
 
   const deleteExpense = (id) => {
-    setExpenses(expenses.filter(exp => exp.id !== id));
+    setExpenses(expenses.filter(e => e.id !== id));
   };
 
+  const filteredExpenses = expenses.filter(expense => {
+    return (
+      (filter.category === 'all' || expense.category === filter.category) &&
+      (!filter.minAmount || expense.amount >= filter.minAmount) &&
+      (!filter.maxAmount || expense.amount <= filter.maxAmount) &&
+      expense.title.toLowerCase().includes(filter.searchQuery.toLowerCase())
+    );
+  });
+
   return (
-    <ExpenseContext.Provider value={{ 
-      expenses,
+    <ExpenseContext.Provider value={{
+      expenses: filteredExpenses,
       addExpense,
       updateExpense,
-      deleteExpense 
+      deleteExpense,
+      filter,
+      setFilter
     }}>
       {children}
     </ExpenseContext.Provider>

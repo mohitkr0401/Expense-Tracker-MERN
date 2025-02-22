@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Form, Button, Card, Container, Alert, Spinner } from 'react-bootstrap';
-import { FaUserPlus } from 'react-icons/fa';
+import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { register, loading, error, success } = useAuth();
+  const { register, loading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,18 +20,11 @@ export default function Register() {
     <Container className="d-flex align-items-center justify-content-center min-vh-100">
       <Card className="shadow-lg p-4" style={{ width: '100%', maxWidth: '400px' }}>
         <Card.Body>
-          <div className="text-center mb-4">
-            <FaUserPlus className="text-primary mb-3" size={40} />
-            <h2 className="mb-1">Create Account</h2>
-            <p className="text-muted">Start managing expenses</p>
-          </div>
-
+          <h2 className="text-center mb-4">Register</h2>
           {error && <Alert variant="danger">{error}</Alert>}
-          {success && <Alert variant="success">{success}</Alert>}
-
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Full Name</Form.Label>
+              <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
                 required
@@ -40,7 +32,6 @@ export default function Register() {
                 onChange={(e) => setName(e.target.value)}
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
@@ -50,7 +41,6 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Group>
-
             <Form.Group className="mb-4">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -61,22 +51,16 @@ export default function Register() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Group>
-
             <Button 
               variant="primary" 
               type="submit" 
               className="w-100 mb-3" 
               disabled={loading}
             >
-              {loading ? (
-                <Spinner animation="border" size="sm" />
-              ) : (
-                'Create Account'
-              )}
+              {loading ? 'Loading...' : 'Create Account'}
             </Button>
-
             <div className="text-center text-muted">
-              Already have an account? <Link to="/login">Login here</Link>
+              Already have an account? <Link to="/login">Login</Link>
             </div>
           </Form>
         </Card.Body>

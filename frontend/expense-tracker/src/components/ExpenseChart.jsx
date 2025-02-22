@@ -16,14 +16,10 @@ export default function ExpenseChart() {
 
       setChartData({
         options: {
-          chart: {
-            type: 'donut',
-          },
+          chart: { type: 'donut' },
           labels: Object.keys(categoryTotals),
           colors: ['#4a90e2', '#6c5ce7', '#00b894', '#d63031', '#fdcb6e'],
-          legend: {
-            position: 'bottom'
-          },
+          legend: { position: 'bottom' },
           plotOptions: {
             pie: {
               donut: {
@@ -57,7 +53,7 @@ export default function ExpenseChart() {
         />
       ) : (
         <div className="text-center py-4 text-muted">
-          No data available for chart
+          Add expenses to see the chart
         </div>
       )}
     </div>
