@@ -4,9 +4,11 @@ import Dashboard from './pages/Dashboard';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import Navigation from './components/Navbar';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
+    <AuthProvider>
     <ExpenseProvider>
       <BrowserRouter>
         <Navigation />
@@ -17,6 +19,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ExpenseProvider>
+    </AuthProvider>
   );
 }
 
