@@ -1,79 +1,95 @@
-import { Row, Col, Card } from 'react-bootstrap';
-import Chart from 'react-apexcharts';
+import { Container, Row, Col, Card } from 'react-bootstrap';
+import ExpenseChart from '../components/ExpenseChart';
+import ExpenseList from '../components/ExpenseList';
+import { useExpense } from '../context/ExpenseContext';
 
 export default function Dashboard() {
-  const chartOptions = {
-    options: {
-      chart: {
-        type: 'donut',
-      },
-      labels: ['Food', 'Transport', 'Shopping', 'Bills'],
-    },
-    series: [30, 40, 45, 50],
-  };
+  const { expenses } = useExpense();
+
+  // Calculate totals
+  const totalExpenses = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+  const lastExpense = expenses[expenses.length - 1];
 
   return (
-    <div className="py-4">
-      <h2 className="mb-4">Dashboard</h2>
-      
+    <Container className="py-4">
       <Row className="g-4 mb-4">
-        <Col md={3}>
-          <Card className="border-0 shadow-sm bg-success text-white">
+        {/* Summary Cards */}
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
             <Card.Body>
-              <h5>Total Balance</h5>
-              <h2>$5,000</h2>
+              <h5 className="text-muted mb-3">Total Expenses</h5>
+              <h2 className="text-primary">${totalExpenses.toFixed(2)}</h2>
+              <small className="text-muted">Lifetime total</small>
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
-          <Card className="border-0 shadow-sm">
+
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
             <Card.Body>
-              <h5>Income</h5>
-              <h2 className="text-success">$3,000</h2>
+              <h5 className="text-muted mb-3">Recent Expense</h5>
+              {lastExpense ? (
+                <>
+                  <h4 className="text-success">${lastExpense.amount}</h4>
+                  <p className="mb-0">{lastExpense.title}</p>
+                </>
+              ) : (
+                <p className="text-muted">No expenses yet</p>
+              )}
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
-          <Card className="border-0 shadow-sm">
+
+        <Col md={4}>
+          <Card className="shadow-sm border-0 h-100">
             <Card.Body>
-              <h5>Expenses</h5>
-              <h2 className="text-danger">$2,000</h2>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="border-0 shadow-sm">
-            <Card.Body>
-              <h5>Savings</h5>
-              <h2 className="text-primary">$1,000</h2>
+              <h5 className="text-muted mb-3">Categories Used</h5>
+              <h2 className="text-info">
+                {new Set(expenses.map(exp => exp.category)).size}
+              </h2>
+              <small className="text-muted">Unique categories</small>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      <Row className="g-4">
-        <Col md={8}>
-          <Card className="border-0 shadow-sm">
+      {/* Charts Section */}
+      <Row className="g-4 mb-4">
+        <Col lg={8}>
+          <Card className="shadow-sm border-0 h-100">
             <Card.Body>
-              <h5 className="mb-4">Recent Transactions</h5>
-              {/* Add transaction list component */}
+              <h5 className="mb-4">Monthly Spending Analysis</h5>
+              <ExpenseChart />
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
-          <Card className="border-0 shadow-sm">
+        
+        <Col lg={4}>
+          <Card className="shadow-sm border-0 h-100">
             <Card.Body>
-              <h5 className="mb-4">Expense Distribution</h5>
-              <Chart
-                options={chartOptions.options}
-                series={chartOptions.series}
-                type="donut"
-                height={300}
-              />
+              <h5 className="mb-4">Quick Actions</h5>
+              <div className="d-grid gap-3">
+                <Button variant="primary" size="lg">
+                  Set Budget
+                </Button>
+                <Button variant="outline-primary" size="lg">
+                  Export Data
+                </Button>
+                <Button variant="outline-secondary" size="lg">
+                  View Reports
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-    </div>
+
+      {/* Expense List */}
+      <Row>
+        <Col>
+          <ExpenseList />
+        </Col>
+      </Row>
+    </Container>
   );
 }

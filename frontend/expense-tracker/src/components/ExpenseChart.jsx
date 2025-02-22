@@ -5,33 +5,39 @@ export default function ExpenseChart() {
   const { expenses } = useExpense();
 
   // Process data for chart
-  const chartData = {
-    options: {
-      labels: expenses.map(exp => exp.category),
-      colors: ['#4a90e2', '#6c5ce7', '#00b894', '#d63031', '#fdcb6e'],
-      legend: {
-        position: 'bottom'
-      },
-      plotOptions: {
-        pie: {
-          donut: {
+  const processData = () => {
+    const categoryTotals = expenses.reduce((acc, expense) => {
+      acc[expense.category] = (acc[expense.category] || 0) + Number(expense.amount);
+      return acc;
+    }, {});
+
+    return {
+      options: {
+        labels: Object.keys(categoryTotals),
+        colors: ['#4a90e2', '#6c5ce7', '#00b894', '#d63031', '#fdcb6e'],
+        legend: {
+          position: 'bottom'
+        },
+        plotOptions: {
+          pie: {
+            donut: {
               labels: {
+                show: true,
+                total: {
                   show: true,
-                  total: {
-                      show: true,
-                      label: 'Total Expenses',
-                      color: '#373d3f',
-                      formatter: (w) => {
-                          return '$' + w.globals.seriesTotals.reduce((a, b) => a + b, 0)
-                      }
-                  }
+                  label: 'Total Expenses',
+                  formatter: () => `$${expenses.reduce((sum, exp) => sum + Number(exp.amount), 0).toFixed(2)}`
+                }
               }
+            }
           }
         }
-      }
-    },
-    series: expenses.map(exp => parseFloat(exp.amount))
+      },
+      series: Object.values(categoryTotals)
+    };
   };
+
+  const chartData = processData();
 
   return (
     <ApexCharts

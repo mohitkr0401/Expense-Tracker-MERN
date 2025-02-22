@@ -1,93 +1,39 @@
-:root {
-  --primary: #4a90e2;
-  --secondary: #6c757d;
-  --success: #28a745;
-  --danger: #dc3545;
-  --light: #f8f9fa;
-  --dark: #343a40;
-}
-
-body {
-  background-color: #f5f7fb;
-  min-height: 100vh;
-}
-
-.card {
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.btn-primary {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-.btn-primary:hover {
-  background-color: #357abd;
-  border-color: #357abd;
-}
-
-.hover-shadow {
-  transition: all 0.3s ease;
-}
-
-.hover-shadow:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.gradient-bg {
-  background: linear-gradient(135deg, #4a90e2 0%, #6c5ce7 100%);
-}
-
-.chart-card {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.stat-card {
-  border: none;
-  border-radius: 15px;
-  background: linear-gradient(45deg, #ffffff, #f8f9fa);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.hover-shadow {
+/* Custom spacing and sizing */
+.list-group-item {
   transition: all 0.2s ease;
-  cursor: pointer;
 }
 
-.hover-shadow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+.list-group-item:hover {
+  background-color: #f8f9fa;
+  transform: translateX(5px);
 }
 
-.apexcharts-tooltip {
-  background: #fff !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-  border-radius: 12px !important;
-  padding: 1rem !important;
+/* Consistent form control sizing */
+.form-control, .form-select {
+  padding: 1rem;
+  border-radius: 0.75rem;
 }
 
-.apexcharts-menu {
-  border: 0 !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-  border-radius: 12px !important;
-  padding: 0.5rem !important;
+/* Button consistency */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
 }
 
-.rounded-card {
-  border-radius: 20px;
-  overflow: hidden;
+/* Responsive table headers */
+@media (max-width: 768px) {
+  .list-group-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }
 
-.gradient-text {
-  background: linear-gradient(45deg, #4a90e2, #6c5ce7);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Chart container styling */
+.chart-container {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
 }
