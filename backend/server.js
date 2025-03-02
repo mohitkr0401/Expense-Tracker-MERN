@@ -2,17 +2,19 @@ const connectDB = require('./config/db');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const authRoutes = require('./routes/authRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-const authRoutes = require('./routes/authRoutes');
-const expenseRoutes = require('./routes/expenseRoutes');
 
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 // Basic Health Check Route
 app.get('/api/health', (req, res) => {
