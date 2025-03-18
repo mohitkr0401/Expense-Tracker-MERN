@@ -9,6 +9,10 @@ const generateToken = (id) => {
   });
 };
 
+exports.getMe = (req, res) => {
+  res.json({ id: '123', name: 'John Doe' });
+};
+
 // Register User
 exports.register = async (req, res) => {
   try {
@@ -34,6 +38,7 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword
     });
+    console.log("User registration successful:", user); // Log successful registration
 
     res.status(201).json({
       success: true,
@@ -41,6 +46,7 @@ exports.register = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Registration error:", error); // Log the error
     res.status(500).json({
       success: false,
       error: 'Server Error'
