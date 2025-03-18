@@ -1,3 +1,4 @@
+// authController.jsx
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -13,13 +14,13 @@ exports.getMe = (req, res) => {
   res.json({ id: '123', name: 'John Doe' });
 };
 
-// Register User
+// Register User (unchanged)
 exports.register = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
 
     // Check if user exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -33,12 +34,12 @@ exports.register = async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
-      username,
-      email,
+      name: name.trim(),
+      username: username.trim(),
+      email: email.toLowerCase().trim(),
       password: hashedPassword
     });
-    console.log("User registration successful:", user); // Log successful registration
+    console.log("User registration successful:", user);
 
     res.status(201).json({
       success: true,
@@ -46,7 +47,7 @@ exports.register = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Registration error:", error); // Log the error
+    console.error("Registration error:", error);
     res.status(500).json({
       success: false,
       error: 'Server Error'
@@ -58,9 +59,10 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = email.trim().toLowerCase();
 
-    // Find user
-    const user = await User.findOne({ email }).select('+password');
+    // Find user and include password field
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -69,7 +71,7 @@ exports.login = async (req, res) => {
     }
 
     // Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password.trim(), user.password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -77,12 +79,18 @@ exports.login = async (req, res) => {
       });
     }
 
+    // Remove password before sending back
+    user.password = undefined;
+
+    // Return token and user details
     res.status(200).json({
       success: true,
-      token: generateToken(user._id)
+      token: generateToken(user._id),
+      user: { email: user.email, name: user.name }
     });
 
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
       error: 'Server Error'

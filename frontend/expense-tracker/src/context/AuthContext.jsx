@@ -1,31 +1,6 @@
-// import { createContext, useContext, useState } from 'react';
-
-// const AuthContext = createContext();
-
-// export function AuthProvider({ children }) {
-//   const [user, setUser] = useState(null);
-
-//   const login = (userData) => {
-//     setUser(userData);
-//     // Add actual authentication logic here
-//   };
-
-//   const logout = () => {
-//     setUser(null);
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ user, login, logout }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// }
-
-// export function useAuth() {
-//   return useContext(AuthContext);
-// }
-
+// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../api/axios';
 
 const AuthContext = createContext();
 
@@ -47,64 +22,66 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Mock login function
+  // Updated login function to check for token instead of user
   const login = async (email, password) => {
     setLoading(true);
     setError('');
     setSuccess('');
     
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulate API delay if needed
+      // await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Get users from localStorage
-      const users = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-      const foundUser = users.find(u => u.email === email && u.password === password);
-
-      if (!foundUser) {
+      // Call the backend API for login
+      const { data } = await api.post('/auth/login', { email, password });
+      console.log('Login response data:', data);
+      
+      if (data && data.token) {
+        // Optionally, you could call /auth/me to fetch full user details.
+        // For now, we'll set a dummy user object using the email.
+        const loggedUser = { email, name: "User" }; 
+        setUser(loggedUser);
+        localStorage.setItem('token', data.token);
+        // Optionally, store loggedUser details too
+        localStorage.setItem('mockCurrentUser', JSON.stringify(loggedUser));
+        setSuccess('Login successful!');
+        return true;
+      } else {
         throw new Error('Invalid email or password');
       }
-
-      setUser({ email: foundUser.email, name: foundUser.name });
-      localStorage.setItem('mockCurrentUser', JSON.stringify(foundUser));
-      setSuccess('Login successful!');
-      return true;
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
       return false;
     } finally {
       setLoading(false);
     }
   };
 
-  // Mock registration function
+  // Registration function remains as before
   const register = async (name, email, password) => {
     setLoading(true);
     setError('');
     setSuccess('');
     
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Validate password length
-      if (password.length < 6) {
+      if (password.trim().length < 6) {
         throw new Error('Password must be at least 6 characters');
       }
 
-      // Get existing users
       const users = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-
-      // Check for existing user
-      if (users.some(u => u.email === email)) {
+      if (users.some(u => u.email.trim().toLowerCase() === email.trim().toLowerCase())) {
         throw new Error('Email already registered');
       }
 
-      // Create new user
-      const newUser = { name, email, password };
+      const newUser = { 
+        name: name.trim(), 
+        email: email.trim().toLowerCase(), 
+        password: password.trim() 
+      };
       const updatedUsers = [...users, newUser];
       
-      // Update storage
       localStorage.setItem('mockUsers', JSON.stringify(updatedUsers));
       localStorage.setItem('mockCurrentUser', JSON.stringify(newUser));
       
@@ -122,6 +99,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('mockCurrentUser');
+    localStorage.removeItem('token');
     setSuccess('Logged out successfully');
   };
 

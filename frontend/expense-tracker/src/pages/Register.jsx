@@ -4,6 +4,7 @@ import { Form, Button, Card, Container, Alert, Spinner } from 'react-bootstrap';
 import api from '../api/axios';
 
 export default function Register() {
+  const [username, setUsername] = useState(''); // new state for username
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +19,7 @@ export default function Register() {
 
     try {
       const { data } = await api.post('/auth/register', {
+        username, // include username in payload
         name,
         email,
         password
@@ -46,13 +48,24 @@ export default function Register() {
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Choose a unique username"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
+                placeholder="Enter your full name"
               />
             </Form.Group>
 

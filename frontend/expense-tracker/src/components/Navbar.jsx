@@ -1,10 +1,11 @@
+// src/components/Navbar.jsx
 import { Link } from 'react-router-dom';
 import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
-import { FaWallet, FaUser, FaUserCog, FaSignOutAlt } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext'; // Add this import
+import { FaWallet, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navigation() {
-  const { user, logout } = useAuth(); // Get user and logout from context
+  const { user, logout } = useAuth();
 
   return (
     <Navbar bg="primary" variant="dark" expand="lg" className="shadow">
@@ -18,13 +19,12 @@ export default function Navigation() {
             <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
             <Nav.Link as={Link} to="/reports">Reports</Nav.Link>
             {user ? (
-        // Show user-related items
-        <NavDropdown title={user.name}>
-          <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
-        </NavDropdown>
-      ) : (
-        <Nav.Link as={Link} to="/login">Login</Nav.Link>
-      )}
+              <NavDropdown title={user.name}>
+                <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
+              </NavDropdown>
+            ) : (
+              <Nav.Link as={Link} to="/login">Login</Nav.Link>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

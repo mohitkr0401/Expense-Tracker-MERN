@@ -1,34 +1,30 @@
+// src/pages/Login.jsx
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Container, Alert, Spinner } from 'react-bootstrap';
-import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorLocal, setErrorLocal] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, error } = useAuth(); // Use the login function from context
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setErrorLocal('');
 
-    try {
-      const { data } = await api.post('/auth/login', {
-        email,
-        password
-      });
-      
-      localStorage.setItem('token', data.token);
-      navigate('/');
-      
-    } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
+    const success = await login(email, password);
+    if (success) {
+      navigate('/'); // Redirect to dashboard on successful login
+    } else {
+      // Optionally show error from AuthContext or set your own error
+      setErrorLocal(error || 'Login failed. Please try again.');
     }
+    setLoading(false);
   };
 
   return (
@@ -40,7 +36,7 @@ export default function Login() {
             <p className="text-muted">Sign in to continue</p>
           </div>
 
-          {error && <Alert variant="danger">{error}</Alert>}
+          {errorLocal && <Alert variant="danger">{errorLocal}</Alert>}
 
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
